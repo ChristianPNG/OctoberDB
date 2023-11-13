@@ -30,7 +30,7 @@ namespace OCTOBER.EF.Models
         [Column("DATA_PROTECTED")]
         [Precision(1)]
         public bool DataProtected { get; set; }
-        [Column("DATA")]
+        [Column("DATA", TypeName = "NCLOB")]
         public string Data { get; set; } = null!;
     }
 }
