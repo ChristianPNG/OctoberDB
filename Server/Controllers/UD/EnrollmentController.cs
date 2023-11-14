@@ -8,6 +8,8 @@ using OCTOBER.Shared.DTO;
 
 namespace OCTOBER.Server.Controllers.UD
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class EnrollmentController : BaseController
     {
         public EnrollmentController(OCTOBEROracleContext context,

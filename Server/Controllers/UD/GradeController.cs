@@ -9,6 +9,8 @@ using static System.Collections.Specialized.BitVector32;
 
 namespace OCTOBER.Server.Controllers.UD
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class GradeController : BaseController
     {
         public GradeController(OCTOBEROracleContext context,

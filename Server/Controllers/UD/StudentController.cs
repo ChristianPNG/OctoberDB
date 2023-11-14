@@ -8,6 +8,8 @@ using OCTOBER.Shared.DTO;
 
 namespace OCTOBER.Server.Controllers.UD
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class StudentController : BaseController
     {
         public StudentController(OCTOBEROracleContext context,
@@ -120,7 +122,7 @@ namespace OCTOBER.Server.Controllers.UD
             {
                 await _context.Database.BeginTransactionAsync();
 
-                var itm = await _context.Students.Where(x => x.SchoolId == _StudentDTO.SchoolId).Where(x => x.LetterGrade == _StudentDTO.LetterGrade).FirstOrDefaultAsync();
+                var itm = await _context.Students.Where(x => x.SchoolId == _StudentDTO.SchoolId).Where(x => x.StudentId == _StudentDTO.StudentId).FirstOrDefaultAsync();
 
                 if (itm == null)
                 {

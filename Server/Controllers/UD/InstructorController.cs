@@ -9,6 +9,8 @@ using static Duende.IdentityServer.Models.IdentityResources;
 
 namespace OCTOBER.Server.Controllers.UD
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class InstructorController : BaseController
     {
         public InstructorController(OCTOBEROracleContext context,
