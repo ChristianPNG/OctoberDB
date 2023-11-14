@@ -141,7 +141,7 @@ namespace OCTOBER.Server.Controllers.UD
                                                 CourseDTO _CourseDTO)
         {
 
-            Debugger.Launch();
+            //Debugger.Launch();
 
             try
             {
@@ -173,7 +173,7 @@ namespace OCTOBER.Server.Controllers.UD
         public async Task<IActionResult> Delete(int CourseNo)
         {
 
-            Debugger.Launch();
+            //Debugger.Launch();
 
             try
             {
