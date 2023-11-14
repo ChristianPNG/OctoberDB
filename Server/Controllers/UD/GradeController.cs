@@ -5,12 +5,13 @@ using OCTOBER.EF.Data;
 using OCTOBER.EF.Models;
 using OCTOBER.Server.Controllers.Base;
 using OCTOBER.Shared.DTO;
+using static System.Collections.Specialized.BitVector32;
 
 namespace OCTOBER.Server.Controllers.UD
 {
-    public class GradeConversionController : BaseController
+    public class GradeController : BaseController
     {
-        public GradeConversionController(OCTOBEROracleContext context,
+        public GradeController(OCTOBEROracleContext context,
             IHttpContextAccessor httpContextAccessor,
             IMemoryCache memoryCache)
         : base(context, httpContextAccessor)
@@ -18,18 +19,24 @@ namespace OCTOBER.Server.Controllers.UD
         }
 
         [HttpDelete]
-        [Route("Delete/{SchoolID}/{LetterGrade}")]
-        public async Task<IActionResult> Delete(int SchoolID, string LetterGrade)
+        [Route("Delete/{SchoolID}/{SectionID}/{StudentID}/{GradeTypeCode}/{GradeCodeOccurrence}")]
+        public async Task<IActionResult> Delete(int SchoolID, int SectionID, int StudentID, string GradeTypeCode, int GradeCodeOccurrence)
         {
             try
             {
                 await _context.Database.BeginTransactionAsync();
 
-                var itm = await _context.GradeConversions.Where(x => x.SchoolId == SchoolID).Where(x => x.LetterGrade == LetterGrade).FirstOrDefaultAsync();
+                var itm = await _context.Grades.Where(x => x.SchoolId == SchoolID)
+                    .Where(x => x.SectionId == SectionID)
+                    .Where(x => x.SchoolId == SchoolID)
+                    .Where(x => x.StudentId == StudentID)
+                    .Where(x => x.GradeTypeCode == GradeTypeCode)
+                    .Where(x => x.GradeCodeOccurrence == GradeCodeOccurrence)
+                    .FirstOrDefaultAsync();
 
                 if (itm != null)
                 {
-                    _context.GradeConversions.Remove(itm);
+                    _context.Grades.Remove(itm);
                 }
                 await _context.SaveChangesAsync();
                 await _context.Database.CommitTransactionAsync();
@@ -51,13 +58,15 @@ namespace OCTOBER.Server.Controllers.UD
             {
                 await _context.Database.BeginTransactionAsync();
 
-                var result = await _context.GradeConversions.Select(sp => new GradeConversionDTO
+                var result = await _context.Grades.Select(sp => new GradeDTO
                 {
                     SchoolId = sp.SchoolId,
-                    LetterGrade = sp.LetterGrade,
-                    GradePoint = sp.GradePoint,
-                    MaxGrade = sp.MaxGrade,
-                    MinGrade = sp.MinGrade,
+                    StudentId = sp.StudentId,
+                    SectionId = sp.SectionId,
+                    GradeTypeCode = sp.GradeTypeCode,
+                    GradeCodeOccurrence = sp.GradeCodeOccurrence,
+                    NumericGrade = sp.NumericGrade,
+                    Comments = sp.Comments,
                     CreatedBy = sp.CreatedBy,
                     CreatedDate = sp.CreatedDate,
                     ModifiedBy = sp.ModifiedBy,
@@ -75,24 +84,29 @@ namespace OCTOBER.Server.Controllers.UD
         }
 
         [HttpGet]
-        [Route("Get/{SchoolID}/{LetterGrade}")]
-        public async Task<IActionResult> Get(int SchoolID, string LetterGrade)
+        [Route("Get/{SchoolID}/{SectionID}/{StudentID}/{GradeTypeCode}/{GradeCodeOccurrence}")]
+        public async Task<IActionResult> Get(int SchoolID, int SectionID, int StudentID, string GradeTypeCode, int GradeCodeOccurrence)
         {
             try
             {
                 await _context.Database.BeginTransactionAsync();
 
-                GradeConversionDTO? result = await _context
-                    .GradeConversions
-                    .Where(x => x.LetterGrade == LetterGrade)
+                GradeDTO? result = await _context
+                    .Grades
+                    .Where(x => x.SectionId == SectionID)
                     .Where(x => x.SchoolId == SchoolID)
-                     .Select(sp => new GradeConversionDTO
+                    .Where(x => x.StudentId == StudentID)
+                    .Where(x => x.GradeTypeCode == GradeTypeCode)
+                    .Where(x => x.GradeCodeOccurrence == GradeCodeOccurrence)
+                     .Select(sp => new GradeDTO
                      {
                          SchoolId = sp.SchoolId,
-                         LetterGrade = sp.LetterGrade,
-                         GradePoint = sp.GradePoint,
-                         MaxGrade = sp.MaxGrade,
-                         MinGrade = sp.MinGrade,
+                         StudentId = sp.StudentId,
+                         SectionId = sp.SectionId,
+                         GradeTypeCode = sp.GradeTypeCode,
+                         GradeCodeOccurrence = sp.GradeCodeOccurrence,
+                         NumericGrade = sp.NumericGrade,
+                         Comments = sp.Comments,
                          CreatedBy = sp.CreatedBy,
                          CreatedDate = sp.CreatedDate,
                          ModifiedBy = sp.ModifiedBy,
@@ -112,25 +126,32 @@ namespace OCTOBER.Server.Controllers.UD
 
         [HttpPost]
         [Route("Post")]
-        public async Task<IActionResult> Post([FromBody] GradeConversionDTO _GradeConversionDTO)
+        public async Task<IActionResult> Post([FromBody] GradeDTO _GradeDTO)
         {
             try
             {
                 await _context.Database.BeginTransactionAsync();
-
-                var itm = await _context.GradeConversions.Where(x => x.SchoolId == _GradeConversionDTO.SchoolId).Where(x => x.LetterGrade == _GradeConversionDTO.LetterGrade).FirstOrDefaultAsync();
+                var itm = await _context.Grades
+                    .Where(x => x.SectionId == _GradeDTO.SectionId)
+                    .Where(x => x.SchoolId == _GradeDTO.SchoolId)
+                    .Where(x => x.StudentId == _GradeDTO.StudentId)
+                    .Where(x => x.GradeTypeCode == _GradeDTO.GradeTypeCode)
+                    .Where(x => x.GradeCodeOccurrence == _GradeDTO.GradeCodeOccurrence)
+                    .FirstOrDefaultAsync();
 
                 if (itm == null)
                 {
-                    GradeConversion c = new GradeConversion
+                    Grade c = new Grade
                     {
-                        SchoolId = _GradeConversionDTO.SchoolId,
-                        LetterGrade = _GradeConversionDTO.LetterGrade,
-                        GradePoint = _GradeConversionDTO.GradePoint,
-                        MaxGrade = _GradeConversionDTO.MaxGrade,
-                        MinGrade = _GradeConversionDTO.MinGrade,
+                        SchoolId = _GradeDTO.SchoolId,
+                        StudentId = _GradeDTO.StudentId,
+                        SectionId = _GradeDTO.SectionId,
+                        GradeTypeCode = _GradeDTO.GradeTypeCode,
+                        GradeCodeOccurrence = _GradeDTO.GradeCodeOccurrence,
+                        NumericGrade = _GradeDTO.NumericGrade,
+                        Comments = _GradeDTO.Comments,
                     };
-                    _context.GradeConversions.Add(c);
+                    _context.Grades.Add(c);
                     await _context.SaveChangesAsync();
                     await _context.Database.CommitTransactionAsync();
                 }
@@ -145,19 +166,21 @@ namespace OCTOBER.Server.Controllers.UD
 
         [HttpPut]
         [Route("Put")]
-        public async Task<IActionResult> Put([FromBody] GradeConversionDTO _GradeConversionDTO)
+        public async Task<IActionResult> Put([FromBody] GradeDTO _GradeDTO)
         {
             try
             {
                 await _context.Database.BeginTransactionAsync();
 
-                var itm = await _context.GradeConversions.Where(x => x.SchoolId == _GradeConversionDTO.SchoolId).Where(x => x.LetterGrade == _GradeConversionDTO.LetterGrade).FirstOrDefaultAsync();
+                var itm = await _context.Grades
+                    .Where(x => x.NumericGrade == _GradeDTO.NumericGrade)
+                    .Where(x => x.Comments == _GradeDTO.Comments)
+                    .FirstOrDefaultAsync();
 
-                itm.GradePoint = _GradeConversionDTO.GradePoint;
-                itm.MaxGrade = _GradeConversionDTO.MaxGrade;
-                itm.MinGrade = _GradeConversionDTO.MinGrade;
+                itm.NumericGrade = _GradeDTO.NumericGrade;
+                itm.Comments = _GradeDTO.Comments;
 
-                _context.GradeConversions.Update(itm);
+                _context.Grades.Update(itm);
                 await _context.SaveChangesAsync();
                 await _context.Database.CommitTransactionAsync();
 

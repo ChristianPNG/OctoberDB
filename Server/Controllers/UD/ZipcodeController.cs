@@ -5,12 +5,13 @@ using OCTOBER.EF.Data;
 using OCTOBER.EF.Models;
 using OCTOBER.Server.Controllers.Base;
 using OCTOBER.Shared.DTO;
+using static Duende.IdentityServer.Models.IdentityResources;
 
 namespace OCTOBER.Server.Controllers.UD
 {
-    public class GradeConversionController : BaseController
+    public class ZipcodeController : BaseController
     {
-        public GradeConversionController(OCTOBEROracleContext context,
+        public ZipcodeController(OCTOBEROracleContext context,
             IHttpContextAccessor httpContextAccessor,
             IMemoryCache memoryCache)
         : base(context, httpContextAccessor)
@@ -18,18 +19,18 @@ namespace OCTOBER.Server.Controllers.UD
         }
 
         [HttpDelete]
-        [Route("Delete/{SchoolID}/{LetterGrade}")]
-        public async Task<IActionResult> Delete(int SchoolID, string LetterGrade)
+        [Route("Delete/{Zip}")]
+        public async Task<IActionResult> Delete(string Zip)
         {
             try
             {
                 await _context.Database.BeginTransactionAsync();
 
-                var itm = await _context.GradeConversions.Where(x => x.SchoolId == SchoolID).Where(x => x.LetterGrade == LetterGrade).FirstOrDefaultAsync();
+                var itm = await _context.Zipcodes.Where(x => x.Zip == Zip).FirstOrDefaultAsync();
 
                 if (itm != null)
                 {
-                    _context.GradeConversions.Remove(itm);
+                    _context.Zipcodes.Remove(itm);
                 }
                 await _context.SaveChangesAsync();
                 await _context.Database.CommitTransactionAsync();
@@ -51,13 +52,11 @@ namespace OCTOBER.Server.Controllers.UD
             {
                 await _context.Database.BeginTransactionAsync();
 
-                var result = await _context.GradeConversions.Select(sp => new GradeConversionDTO
+                var result = await _context.Zipcodes.Select(sp => new ZipcodeDTO
                 {
-                    SchoolId = sp.SchoolId,
-                    LetterGrade = sp.LetterGrade,
-                    GradePoint = sp.GradePoint,
-                    MaxGrade = sp.MaxGrade,
-                    MinGrade = sp.MinGrade,
+                    Zip = sp.Zip,
+                    City = sp.City,
+                    State = sp.State,
                     CreatedBy = sp.CreatedBy,
                     CreatedDate = sp.CreatedDate,
                     ModifiedBy = sp.ModifiedBy,
@@ -75,24 +74,21 @@ namespace OCTOBER.Server.Controllers.UD
         }
 
         [HttpGet]
-        [Route("Get/{SchoolID}/{LetterGrade}")]
-        public async Task<IActionResult> Get(int SchoolID, string LetterGrade)
+        [Route("Get/{Zip}")]
+        public async Task<IActionResult> Get(string Zip)
         {
             try
             {
                 await _context.Database.BeginTransactionAsync();
 
-                GradeConversionDTO? result = await _context
-                    .GradeConversions
-                    .Where(x => x.LetterGrade == LetterGrade)
-                    .Where(x => x.SchoolId == SchoolID)
-                     .Select(sp => new GradeConversionDTO
+                ZipcodeDTO? result = await _context
+                    .Zipcodes
+                    .Where(x => x.Zip == Zip)
+                     .Select(sp => new ZipcodeDTO
                      {
-                         SchoolId = sp.SchoolId,
-                         LetterGrade = sp.LetterGrade,
-                         GradePoint = sp.GradePoint,
-                         MaxGrade = sp.MaxGrade,
-                         MinGrade = sp.MinGrade,
+                         Zip = sp.Zip,
+                         City = sp.City,
+                         State = sp.State,
                          CreatedBy = sp.CreatedBy,
                          CreatedDate = sp.CreatedDate,
                          ModifiedBy = sp.ModifiedBy,
@@ -112,25 +108,23 @@ namespace OCTOBER.Server.Controllers.UD
 
         [HttpPost]
         [Route("Post")]
-        public async Task<IActionResult> Post([FromBody] GradeConversionDTO _GradeConversionDTO)
+        public async Task<IActionResult> Post([FromBody] ZipcodeDTO _ZipcodeDTO)
         {
             try
             {
                 await _context.Database.BeginTransactionAsync();
 
-                var itm = await _context.GradeConversions.Where(x => x.SchoolId == _GradeConversionDTO.SchoolId).Where(x => x.LetterGrade == _GradeConversionDTO.LetterGrade).FirstOrDefaultAsync();
+                var itm = await _context.Zipcodes.Where(x => x.Zip == _ZipcodeDTO.Zip).FirstOrDefaultAsync();
 
                 if (itm == null)
                 {
-                    GradeConversion c = new GradeConversion
+                    Zipcode c = new Zipcode
                     {
-                        SchoolId = _GradeConversionDTO.SchoolId,
-                        LetterGrade = _GradeConversionDTO.LetterGrade,
-                        GradePoint = _GradeConversionDTO.GradePoint,
-                        MaxGrade = _GradeConversionDTO.MaxGrade,
-                        MinGrade = _GradeConversionDTO.MinGrade,
+                        Zip = _ZipcodeDTO.Zip,
+                        City = _ZipcodeDTO.City,
+                        State = _ZipcodeDTO.State,
                     };
-                    _context.GradeConversions.Add(c);
+                    _context.Zipcodes.Add(c);
                     await _context.SaveChangesAsync();
                     await _context.Database.CommitTransactionAsync();
                 }
@@ -145,19 +139,18 @@ namespace OCTOBER.Server.Controllers.UD
 
         [HttpPut]
         [Route("Put")]
-        public async Task<IActionResult> Put([FromBody] GradeConversionDTO _GradeConversionDTO)
+        public async Task<IActionResult> Put([FromBody] ZipcodeDTO _ZipcodeDTO)
         {
             try
             {
                 await _context.Database.BeginTransactionAsync();
 
-                var itm = await _context.GradeConversions.Where(x => x.SchoolId == _GradeConversionDTO.SchoolId).Where(x => x.LetterGrade == _GradeConversionDTO.LetterGrade).FirstOrDefaultAsync();
+                var itm = await _context.Zipcodes.Where(x => x.Zip == _ZipcodeDTO.Zip).FirstOrDefaultAsync();
 
-                itm.GradePoint = _GradeConversionDTO.GradePoint;
-                itm.MaxGrade = _GradeConversionDTO.MaxGrade;
-                itm.MinGrade = _GradeConversionDTO.MinGrade;
+                itm.City = _ZipcodeDTO.City;
+                itm.State = _ZipcodeDTO.State;
 
-                _context.GradeConversions.Update(itm);
+                _context.Zipcodes.Update(itm);
                 await _context.SaveChangesAsync();
                 await _context.Database.CommitTransactionAsync();
 

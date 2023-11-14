@@ -8,9 +8,9 @@ using OCTOBER.Shared.DTO;
 
 namespace OCTOBER.Server.Controllers.UD
 {
-    public class GradeConversionController : BaseController
+    public class StudentController : BaseController
     {
-        public GradeConversionController(OCTOBEROracleContext context,
+        public StudentController(OCTOBEROracleContext context,
             IHttpContextAccessor httpContextAccessor,
             IMemoryCache memoryCache)
         : base(context, httpContextAccessor)
@@ -18,18 +18,18 @@ namespace OCTOBER.Server.Controllers.UD
         }
 
         [HttpDelete]
-        [Route("Delete/{SchoolID}/{LetterGrade}")]
-        public async Task<IActionResult> Delete(int SchoolID, string LetterGrade)
+        [Route("Delete/{SchoolID}/{StudentID}")]
+        public async Task<IActionResult> Delete(int SchoolID, int StudentID)
         {
             try
             {
                 await _context.Database.BeginTransactionAsync();
 
-                var itm = await _context.GradeConversions.Where(x => x.SchoolId == SchoolID).Where(x => x.LetterGrade == LetterGrade).FirstOrDefaultAsync();
+                var itm = await _context.Students.Where(x => x.SchoolId == SchoolID).Where(x => x.StudentId == StudentID).FirstOrDefaultAsync();
 
                 if (itm != null)
                 {
-                    _context.GradeConversions.Remove(itm);
+                    _context.Students.Remove(itm);
                 }
                 await _context.SaveChangesAsync();
                 await _context.Database.CommitTransactionAsync();
@@ -51,13 +51,14 @@ namespace OCTOBER.Server.Controllers.UD
             {
                 await _context.Database.BeginTransactionAsync();
 
-                var result = await _context.GradeConversions.Select(sp => new GradeConversionDTO
+                var result = await _context.Students.Select(sp => new StudentDTO
                 {
                     SchoolId = sp.SchoolId,
-                    LetterGrade = sp.LetterGrade,
-                    GradePoint = sp.GradePoint,
-                    MaxGrade = sp.MaxGrade,
-                    MinGrade = sp.MinGrade,
+                    StudentId = sp.StudentId,
+                    Salutation = sp.Salutation,
+                    FirstName = sp.FirstName,
+                    LastName = sp.LastName,
+                    StreetAddress = sp.StreetAddress,
                     CreatedBy = sp.CreatedBy,
                     CreatedDate = sp.CreatedDate,
                     ModifiedBy = sp.ModifiedBy,
@@ -75,24 +76,25 @@ namespace OCTOBER.Server.Controllers.UD
         }
 
         [HttpGet]
-        [Route("Get/{SchoolID}/{LetterGrade}")]
-        public async Task<IActionResult> Get(int SchoolID, string LetterGrade)
+        [Route("Get/{SchoolID}/{StudentID}")]
+        public async Task<IActionResult> Get(int SchoolID, int StudentID)
         {
             try
             {
                 await _context.Database.BeginTransactionAsync();
 
-                GradeConversionDTO? result = await _context
-                    .GradeConversions
-                    .Where(x => x.LetterGrade == LetterGrade)
+                StudentDTO? result = await _context
+                    .Students
+                    .Where(x => x.StudentId == StudentID)
                     .Where(x => x.SchoolId == SchoolID)
-                     .Select(sp => new GradeConversionDTO
+                     .Select(sp => new StudentDTO
                      {
                          SchoolId = sp.SchoolId,
-                         LetterGrade = sp.LetterGrade,
-                         GradePoint = sp.GradePoint,
-                         MaxGrade = sp.MaxGrade,
-                         MinGrade = sp.MinGrade,
+                         StudentId = sp.StudentId,
+                         Salutation = sp.Salutation,
+                         FirstName = sp.FirstName,
+                         LastName = sp.LastName,
+                         StreetAddress = sp.StreetAddress,
                          CreatedBy = sp.CreatedBy,
                          CreatedDate = sp.CreatedDate,
                          ModifiedBy = sp.ModifiedBy,
@@ -112,25 +114,26 @@ namespace OCTOBER.Server.Controllers.UD
 
         [HttpPost]
         [Route("Post")]
-        public async Task<IActionResult> Post([FromBody] GradeConversionDTO _GradeConversionDTO)
+        public async Task<IActionResult> Post([FromBody] StudentDTO _StudentDTO)
         {
             try
             {
                 await _context.Database.BeginTransactionAsync();
 
-                var itm = await _context.GradeConversions.Where(x => x.SchoolId == _GradeConversionDTO.SchoolId).Where(x => x.LetterGrade == _GradeConversionDTO.LetterGrade).FirstOrDefaultAsync();
+                var itm = await _context.Students.Where(x => x.SchoolId == _StudentDTO.SchoolId).Where(x => x.LetterGrade == _StudentDTO.LetterGrade).FirstOrDefaultAsync();
 
                 if (itm == null)
                 {
-                    GradeConversion c = new GradeConversion
+                    Student c = new Student
                     {
-                        SchoolId = _GradeConversionDTO.SchoolId,
-                        LetterGrade = _GradeConversionDTO.LetterGrade,
-                        GradePoint = _GradeConversionDTO.GradePoint,
-                        MaxGrade = _GradeConversionDTO.MaxGrade,
-                        MinGrade = _GradeConversionDTO.MinGrade,
+                        SchoolId = _StudentDTO.SchoolId,
+                        StudentId = _StudentDTO.StudentId,
+                        Salutation = _StudentDTO.Salutation,
+                        FirstName = _StudentDTO.FirstName,
+                        LastName = _StudentDTO.LastName,
+                        StreetAddress = _StudentDTO.StreetAddress,
                     };
-                    _context.GradeConversions.Add(c);
+                    _context.Students.Add(c);
                     await _context.SaveChangesAsync();
                     await _context.Database.CommitTransactionAsync();
                 }
@@ -145,19 +148,20 @@ namespace OCTOBER.Server.Controllers.UD
 
         [HttpPut]
         [Route("Put")]
-        public async Task<IActionResult> Put([FromBody] GradeConversionDTO _GradeConversionDTO)
+        public async Task<IActionResult> Put([FromBody] StudentDTO _StudentDTO)
         {
             try
             {
                 await _context.Database.BeginTransactionAsync();
 
-                var itm = await _context.GradeConversions.Where(x => x.SchoolId == _GradeConversionDTO.SchoolId).Where(x => x.LetterGrade == _GradeConversionDTO.LetterGrade).FirstOrDefaultAsync();
+                var itm = await _context.Students.Where(x => x.SchoolId == _StudentDTO.SchoolId).Where(x => x.StudentId == _StudentDTO.StudentId).FirstOrDefaultAsync();
 
-                itm.GradePoint = _GradeConversionDTO.GradePoint;
-                itm.MaxGrade = _GradeConversionDTO.MaxGrade;
-                itm.MinGrade = _GradeConversionDTO.MinGrade;
+                itm.Salutation = _StudentDTO.Salutation;
+                itm.FirstName = _StudentDTO.FirstName;
+                itm.LastName = _StudentDTO.LastName;
+                itm.StreetAddress = _StudentDTO.StreetAddress;
 
-                _context.GradeConversions.Update(itm);
+                _context.Students.Update(itm);
                 await _context.SaveChangesAsync();
                 await _context.Database.CommitTransactionAsync();
 

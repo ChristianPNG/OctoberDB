@@ -54,6 +54,8 @@ namespace OCTOBER.Server.Controllers.UD
 
                 var result = await _context.Enrollments.Select(sp => new EnrollmentDTO
                 {
+                    SectionId = sp.SectionId,
+                    StudentId = sp.StudentId,
                     CreatedBy = sp.CreatedBy,
                     CreatedDate = sp.CreatedDate,
                     ModifiedBy = sp.ModifiedBy,
@@ -86,6 +88,8 @@ namespace OCTOBER.Server.Controllers.UD
                     .Where(x => x.SectionId == SectionID)
                      .Select(sp => new EnrollmentDTO
                      {
+                         SectionId = sp.SectionId,
+                         StudentId = sp.StudentId,
                          CreatedBy = sp.CreatedBy,
                          CreatedDate = sp.CreatedDate,
                          ModifiedBy = sp.ModifiedBy,
@@ -119,6 +123,8 @@ namespace OCTOBER.Server.Controllers.UD
                 {
                     Enrollment c = new Enrollment
                     {
+                        SectionId = _EnrollmentDTO.SectionId,
+                        StudentId = _EnrollmentDTO.StudentId,
                         EnrollDate = _EnrollmentDTO.EnrollDate,
                         FinalGrade = _EnrollmentDTO.FinalGrade
                     };

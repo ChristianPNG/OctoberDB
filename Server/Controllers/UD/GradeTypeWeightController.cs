@@ -53,6 +53,9 @@ namespace OCTOBER.Server.Controllers.UD
 
                 var result = await _context.GradeTypeWeights.Select(sp => new GradeTypeWeightDTO
                 {
+                    SchoolId = sp.SchoolId,
+                    GradeTypeCode = sp.GradeTypeCode,
+                    SectionId = sp.SectionId,
                     NumberPerSection = sp.NumberPerSection,
                     PercentOfFinalGrade = sp.PercentOfFinalGrade,
                     DropLowest = sp.DropLowest,
@@ -87,6 +90,9 @@ namespace OCTOBER.Server.Controllers.UD
                     .Where(x => x.GradeTypeCode == GradeTypeCode)
                      .Select(sp => new GradeTypeWeightDTO
                      {
+                         SchoolId = sp.SchoolId,
+                         GradeTypeCode = sp.GradeTypeCode,
+                         SectionId = sp.SectionId,
                          NumberPerSection = sp.NumberPerSection,
                          PercentOfFinalGrade = sp.PercentOfFinalGrade,
                          DropLowest = sp.DropLowest,
@@ -125,6 +131,9 @@ namespace OCTOBER.Server.Controllers.UD
                 {
                     GradeTypeWeight c = new GradeTypeWeight
                     {
+                        SchoolId = _GradeTypeWeightDTO.SchoolId,
+                        GradeTypeCode = _GradeTypeWeightDTO.GradeTypeCode,
+                        SectionId = _GradeTypeWeightDTO.SectionId,
                         NumberPerSection = _GradeTypeWeightDTO.NumberPerSection,
                         PercentOfFinalGrade = _GradeTypeWeightDTO.PercentOfFinalGrade,
                         DropLowest = _GradeTypeWeightDTO.DropLowest,

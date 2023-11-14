@@ -53,6 +53,8 @@ namespace OCTOBER.Server.Controllers.UD
 
                 var result = await _context.GradeTypes.Select(sp => new GradeTypeDTO
                 {
+                    SchoolId = sp.SchoolId,
+                    GradeTypeCode = sp.GradeTypeCode,
                     Description = sp.Description,
                     CreatedBy = sp.CreatedBy,
                     CreatedDate = sp.CreatedDate,
@@ -84,6 +86,8 @@ namespace OCTOBER.Server.Controllers.UD
                     .Where(x => x.SchoolId == SchoolID)
                      .Select(sp => new GradeTypeDTO
                      {
+                         SchoolId = sp.SchoolId,
+                         GradeTypeCode = sp.GradeTypeCode,
                          Description = sp.Description,
                          CreatedBy = sp.CreatedBy,
                          CreatedDate = sp.CreatedDate,
@@ -116,6 +120,8 @@ namespace OCTOBER.Server.Controllers.UD
                 {
                     GradeType c = new GradeType
                     {
+                        SchoolId = _GradeTypeDTO.SchoolId,
+                        GradeTypeCode = _GradeTypeDTO.GradeTypeCode,
                         Description = _GradeTypeDTO.Description,
                     };
                     _context.GradeTypes.Add(c);
